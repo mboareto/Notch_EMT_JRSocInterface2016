@@ -9,12 +9,19 @@ http://rsif.royalsocietypublishing.org/content/13/118/20151106
 
 
 1 Cell simullations:
+
 https://github.com/mboareto/Notch_EMT_JRSocInterface2016/blob/master/EMTNotch_1cell.ipynb
 
+
+
 Tissue simulations:
+
 https://github.com/mboareto/Notch_EMT_JRSocInterface2016/blob/master/NotchEMT_2Dsimulations.ipynb
 
+
+
 auxilary functions:
+
 https://github.com/mboareto/Notch_EMT_JRSocInterface2016/blob/master/auxilary_functions.py
 
 
