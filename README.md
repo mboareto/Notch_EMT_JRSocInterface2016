@@ -32,9 +32,9 @@ https://github.com/mboareto/Notch_EMT_JRSocInterface2016/blob/master/auxilary_fu
 
 
 #### Erratum (Jan 2017)
-I realized a minor error in the code, in the definitions of the auxiliary functions Py and Pl (I thank to Federico Bocci
-for pointing this out). I had a for loop up to n, while the correct is to n+1 (see lines XX of auxilary_function.py). 
-This error does not affect the 1 Cell simulations, but small quantitative differences is observed in the tissue level simulations.
+I realized a minor error in the code, in the definitions of the auxiliary functions Py and Pl (I thank Federico Bocci
+for pointing this out). I had a for loop up to n, while the correct is to n+1 (see lines 112-124 of auxilary_function.py). 
+This error does not affect the 1 Cell simulations, but small quantitative differences are observed in the tissue level simulations.
 The interpretation and conclusions of the model remains the same. The corrected version is presented at: 
 
 https://github.com/mboareto/Notch_EMT_JRSocInterface2016/blob/master/NotchEMT_2Dsimulations_corrected.ipynb
