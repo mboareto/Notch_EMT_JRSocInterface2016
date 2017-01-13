@@ -1,8 +1,9 @@
 #-------------------------------------------------------------------------------------------------------------------#
 #  Auxilary functions.
 #  Writen by Marcelo Boareto: marceloboareto@gmail.com
-#  Last update: 11/2015
+#  Last update: 01/2017
 #-------------------------------------------------------------------------------------------------------------------#
+
 from PyDSTool import *
 from PyDSTool.Toolbox import phaseplane as pp
 from matplotlib import cm
@@ -15,6 +16,8 @@ from scipy.ndimage import measurements
 import matplotlib.colors as cl
 import math
 
+#----------------------------------------------------------------------------------------#
+# parameters used in the simulations
 def parameters(onecell=False):
     dic =  {'km' : 5.0e-1
            ,'kP' : 1.0e+2
@@ -67,6 +70,8 @@ def parameters(onecell=False):
                     })
     return dic
   
+#----------------------------------------------------------------------------------------#
+# equations used in the simulations
 def equations(onecell=False):
     if onecell:
           return {'W' : 'gu200*HS(Z,Z0u200,nZu200,lZu200)*HS(S,S0u200,nSu200,lSu200) - gZ*HS(Z,Z0Z,nZZ,lZZ)*HS(S,S0Z,nSZ,lSZ)*Py(W,km,6) - gJ*HS(I,I0,p,lj)*Py(W,km,5) - ku200*W'
@@ -88,17 +93,9 @@ def equations(onecell=False):
                  ,'J' : 'kP*gJ*HS(I,I0,p,lj)*Pl(W,5,km,u0200) - J*(  kc*N*HS(I,I0,pf,ljf) + kt*(Nn + Nt) ) - k*J'
                  ,'I' : 'kt*N*( (Dn + Dt)*HS(I,I0,pf,ldf) + (Jn + Jt)*HS(I,I0,pf,ljf) ) - kI*I'
                  }
-    #return {'W' : 'gu200*HS(Z,Z0u200,nZu200,lZu200)*HS(S,S0u200,nSu200,lSu200) - gZ*HS(Z,Z0Z,nZZ,lZZ)*HS(S,S0Z,nSZ,lSZ)*Py(W,6,km,u0200,gu,gm) - gJ*HS(I,I0,p,lj)*Py(W,5,km,u0200,gu,gm) - ku200*W'
-           #,'Y' : 'gu34*HS(S,S0u34,nSu34,lSu34)*HS(Z,Z0u34,nu34,lZu34) - gS*HS(S,S0S,nSS,lSS)*HS(I,I0S,nI,lIS)*HS(Iext,I0S,nI,lIS)*Py(Y,2,km,u034,gu,gm) - gN*HS(I,I0,p,ln)*Py(Y,2,km,u034,gu,gm) - gD*HS(I,I0,p,ld)*Py(Y,3,km,u034,gu,gm) - ku34*Y'
-           #,'Z' : 'kP*gZ*HS(Z,Z0Z,nZZ,lZZ)*HS(S,S0Z,nSZ,lSZ)*Pl(W,6,km,u0200,l,gm) - kZ*Z'
-           #,'S' : 'kP*gS*HS(S,S0S,nSS,lSS)*HS(I,I0S,nI ,lIS)*HS(Iext,I0S,nI,lIS)*Pl(Y,2,km,u034,l,gm)  - kS*S'   
-           #,'N' : 'kP*gN*HS(I,I0,p,ln)*Pl(Y,2,km,u034, l,gm) - N*( (kc*D + kt*(Dn + Dt))*HS(I,I0,pf,ldf) + (kc*J + kt*(Jn + Jt))*HS(I,I0,pf,ljf) ) - k*N'
-           #,'D' : 'kP*gD*HS(I,I0,p,ld)*Pl(Y,3,km,u034, l,gm) - D*(  kc*N*HS(I,I0,pf,ldf) + kt*(Nn + Nt) ) - k*D'
-           #,'J' : 'kP*gJ*HS(I,I0,p,lj)*Pl(W,5,km,u0200,l,gm) - J*(  kc*N*HS(I,I0,pf,ljf) + kt*(Nn + Nt) ) - k*J'
-           #,'I' : 'kt*N*( (Dn + Dt)*HS(I,I0,pf,ldf) + (Jn + Jt)*HS(I,I0,pf,ljf) ) - kI*I'
-           #}
-  
-# Auxilary functions
+ 
+#----------------------------------------------------------------------------------------#
+# Auxilary functions used in the tisse level simulations
 def HS(X,X0,nX,lamb):
     return lamb + (1.0-lamb)/(1.0 + (X/X0)**nX)
 
@@ -112,7 +109,9 @@ def Py(X, n, k, u0, gu=[0.0e+0, 1*5.0e-3, 2*5.0e-2, 3*5.0e-1, 4*5.0e-1, 5*5.0e-1
        gm=[0.0e+0, 4.0e-2, 2.0e-1, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0]):
     v1 = 0
     v2 = 0
-    for i in range(n):
+#    for i in range(n):
+# corrected at 01/2017
+    for i in range(n+1):
         v1 += gu[i]*C(i,n)*M(X,u0,i,n)
         v2 += gm[i]*C(i,n)*M(X,u0,i,n)
     return v1/(v2+k)
@@ -121,31 +120,25 @@ def Pl(X, n, k, u0, l=[1.0e+0, 6.0e-1, 3.0e-1, 1.0e-1, 5.0e-2, 5.0e-2, 5.0e-2],
        gm=[0.0e+0, 4.0e-2, 2.0e-1, 1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0]):
     v1 = 0
     v2 = 0
-    for i in range(n):
+#    for i in range(n):
+# corrected at 01/2017
+    for i in range(n+1):
         v1 +=  l[i]*C(i,n)*M(X,u0,i,n)
         v2 += gm[i]*C(i,n)*M(X,u0,i,n)
     return v1/(v2+k)
 
-#def HS(X,X0,nX,l):
-    #return l + (1.0-l)/(1.0 + (X/X0)**nX)
 
-#def M(X,X0,i,n):
-    #return ((X/X0)**i)/((1. + (X/X0))**n)
+#----------------------------------------------------------------------------------------#
+# auxilary functions used in the 1 cell simulations
+def functions():
+    return {'HS': (['X','X0','nX','lamb'], 'lamb + (1.0-lamb)/(1.0 + (X/X0)**nX)')
+           ,'M' : (['X','X0','i','n'], '((X/X0)**i)/((1. + (X/X0))**n)' )
+           ,'C' : (['i','n'],'special_gamma(n+1)/(special_gamma(n-i+1)*special_gamma(i+1))'     )
+           ,'Py': (['X','kd','n'],'sum(i, 0, 6, if([i]>n, 0, gu[i]*C([i],n)*M(X,u0200,[i],n)))/(sum(i, 0, 6, if([i]>n, 0, gm[i]*C([i],n)*M(X,u0200,[i],n))) + kd)')
+           ,'Pl': (['X','kd','n'],'sum(i, 0, 6, if([i]>n, 0,  l[i]*C([i],n)*M(X,u0200,[i],n)))/(sum(i, 0, 6, if([i]>n, 0, gm[i]*C([i],n)*M(X,u0200,[i],n))) + kd)')
+           }
 
-#def C(i,n):
-    #return gamma(n+1)/(gamma(n-i+1)*gamma(i+1))
-
-#def Py(X, n, k, u0, gu, gm):
-    #v1 = 0
-    #v2 = 0
-    #for i in range(n):
-        #v1 += gu[i]*C(i,n)*M(X,u0,i,n)
-        #v2 += gm[i]*C(i,n)*M(X,u0,i,n)
-    #return v1/(v2+k)
-
-#def Pl(X, n, k, u0, l, gm):
-    #return Py(X, n, k, u0, l, gm)
-
+# variable limits
 def vlim(c=None):
     if c=='E':
         return {'N': [0.0e+4, 3.0e+4], 'D': [0.0e+4, 0.2e+4], 'J': [0.0e+4, 1.0e+4], 'I': [0.0e+4, 0.002e+4]
@@ -164,26 +157,6 @@ def vlim(c=None):
                ,'W': [0.0e+4, 4.0e+4], 'Z': [0.0e+5, 9.0e+5], 'Y': [0.6e+4, 2.4e+4], 'S': [5.0e+4, 3.0e+5]
                }
 
-
-def functions():
-    return {'HS': (['X','X0','nX','lamb'], 'lamb + (1.0-lamb)/(1.0 + (X/X0)**nX)')
-           ,'M' : (['X','X0','i','n'], '((X/X0)**i)/((1. + (X/X0))**n)' )
-           ,'C' : (['i','n'],'special_gamma(n+1)/(special_gamma(n-i+1)*special_gamma(i+1))'     )
-           ,'Py': (['X','kd','n'],'sum(i, 0, 6, if([i]>n, 0, gu[i]*C([i],n)*M(X,u0200,[i],n)))/(sum(i, 0, 6, if([i]>n, 0, gm[i]*C([i],n)*M(X,u0200,[i],n))) + kd)')
-           ,'Pl': (['X','kd','n'],'sum(i, 0, 6, if([i]>n, 0,  l[i]*C([i],n)*M(X,u0200,[i],n)))/(sum(i, 0, 6, if([i]>n, 0, gm[i]*C([i],n)*M(X,u0200,[i],n))) + kd)')
-           }
-    #return {'HS' : (['X','X0','nX','l'], 'l + (1.0-l)/(1.0 + (X/X0)**nX)')
-           #,'M'  : (['X','X0','i','n'], '((X/X0)**i)/((1. + (X/X0))**n)' )
-           #,'C'  : (['i','n'],'special_gamma(n+1)/(special_gamma(n-i+1)*special_gamma(i+1))'     )
-           #,'Py6': (['X','kd'],'sum(i, 0, 6, gu[i]*C([i],6)*M(X,u0200,[i],6))/(sum(i, 0, 6, gm[i]*C([i],6)*M(X,u0200,[i],6)) + kd)')
-           #,'Py5': (['X','kd'],'sum(i, 0, 5, gu[i]*C([i],5)*M(X,u0200,[i],5))/(sum(i, 0, 5, gm[i]*C([i],5)*M(X,u0200,[i],5)) + kd)')
-           #,'Py3': (['X','kd'],'sum(i, 0, 3, gu[i]*C([i],3)*M(X,u034,[i],3))/(sum(i, 0, 3, gm[i]*C([i],3)*M(X,u034,[i],3)) + kd)')
-           #,'Py2': (['X','kd'],'sum(i, 0, 2, gu[i]*C([i],2)*M(X,u034,[i],2))/(sum(i, 0, 2, gm[i]*C([i],2)*M(X,u034,[i],2)) + kd)')
-           #,'Pl6': (['X','kd'],'sum(i, 0, 6,  l[i]*C([i],6)*M(X,u0200,[i],6))/(sum(i, 0, 6, gm[i]*C([i],6)*M(X,u0200,[i],6)) + kd)')
-           #,'Pl5': (['X','kd'],'sum(i, 0, 5,  l[i]*C([i],5)*M(X,u0200,[i],5))/(sum(i, 0, 5, gm[i]*C([i],5)*M(X,u0200,[i],5)) + kd)')
-           #,'Pl3': (['X','kd'],'sum(i, 0, 3,  l[i]*C([i],3)*M(X,u034,[i],3))/(sum(i, 0, 3, gm[i]*C([i],3)*M(X,u034,[i],3)) + kd)')
-           #,'Pl2': (['X','kd'],'sum(i, 0, 2,  l[i]*C([i],2)*M(X,u034,[i],2))/(sum(i, 0, 2, gm[i]*C([i],2)*M(X,u034,[i],2)) + kd)')
-           #}
 
 #----------------------------------------------------------------------------------------#
 # Euler method for solving EDO equations 
@@ -207,6 +180,7 @@ def euler_traj(eqs, p, pts=None, vlim=None, hexagonal=True,
         pts = pts_new
     return pts
 
+
 #----------------------------------------------------------------------------------------#
 # Sum the amount of proteins of the neighboring cells
 def nsignal_sum(p, pts, k, key, hexagonal=True):
@@ -223,6 +197,7 @@ def nsignal_sum(p, pts, k, key, hexagonal=True):
                          + X[0:n,2:(n+2)] + X[2:(n+2),2:(n+2)] )
     return     (1.0/4.0)*( X[0:n,1:(n+1)] + X[1:(n+1),0:n] + X[2:(n+2),1:(n+1)] + X[1:(n+1),2:(n+2)]  )
 
+
 #----------------------------------------------------------------------------------------#
 # Expand the matrix from nxn to (n+2)x(n+2) where the extra rows and columns are chosen by 
 # a periodic boundary condition
@@ -238,6 +213,7 @@ def periodic_bcondition(f, n):
     out[n+1    ,n+1    ] = out[1      ,1      ]
     out[n+1    ,0      ] = out[1      ,n      ]
     return out
+
 
 #----------------------------------------------------------------------------------------#
 # Plot a hexagonal lattice from a matrix M
@@ -287,6 +263,7 @@ def plot_hex(M, clim=None, cmap=None, clabel=None, fig_name=None, title=None, tr
     plt.show()
 
 
+
 def plot_relativeLevel(eqs, p, v, r_v, key, pts_i=None, vlim=None, nsignal_dict=None, fig_name=None, clim=None,
                       show_snapshot=False, c=['b','r','g','m','k']):
     fs = {}
@@ -322,12 +299,15 @@ def plot_relativeLevel(eqs, p, v, r_v, key, pts_i=None, vlim=None, nsignal_dict=
     plt.show()
 
 
+
 def fractionStates(X, tr):
     N = np.float(np.size(X))
     if len(tr)==1:
         return np.sum(X<tr[0])/N, np.sum(X>tr[0])/N 
     elif len(tr)==2:
         return [np.sum(X<tr[0])/N, np.sum((X>tr[0]) & (X<tr[1]))/N, np.sum(X>tr[1])/N]
+    
+    
     
 def plot_fractionStates(eqs, p, v, r_v, key, tr, pts_i=None, vlim=None, l=['M','E/M','E'], c=['#e8656c','#e4fc36','#00ff9c'], 
 			show_snapshot=False, nsignal_dict={'N': ['D', 'J'], 'I': ['D', 'J'], 'D': ['N'], 'J': ['N']}, fig_name=None):
@@ -364,8 +344,9 @@ def plot_fractionStates(eqs, p, v, r_v, key, tr, pts_i=None, vlim=None, l=['M','
 #----------------------------------------------------------------------------------------#    
 
 
-
-#-------------------------------------------------------------------------------------------------------------------#
+#----------------------------------------------------------------------------------------#
+# PyDSTool auxilary functions
+#----------------------------------------------------------------------------------------#
 def eliminate_redundants(fp, eps=10):
     for i in range(len(fp)):
         for k, v in fp[i].items():
